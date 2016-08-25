@@ -8,6 +8,7 @@
 package com.whizzosoftware.hobson.twilio;
 
 import com.whizzosoftware.hobson.api.plugin.http.AbstractHttpClientPlugin;
+import com.whizzosoftware.hobson.api.plugin.http.HttpRequest;
 import com.whizzosoftware.hobson.api.property.PropertyConstraintType;
 import com.whizzosoftware.hobson.api.property.PropertyContainer;
 import com.whizzosoftware.hobson.api.property.TypedProperty;
@@ -63,9 +64,11 @@ public class TwilioSMSAction extends TaskActionClass implements TaskActionExecut
                 .append("&Body=")
                 .append(URLEncoder.encode(pc.getStringPropertyValue("message"), "UTF8"));
 
-            plugin.sendHttpPostRequest(
+            plugin.sendHttpRequest(
                 new URI("https://api.twilio.com/2010-04-01/Accounts/" + accountSid + "/Messages.json"),
+                HttpRequest.Method.POST,
                 Collections.singletonMap("Authorization", "Basic " + Base64.encodeBase64String(auth.getBytes())),
+                null,
                 data.toString().getBytes(),
                 null
             );

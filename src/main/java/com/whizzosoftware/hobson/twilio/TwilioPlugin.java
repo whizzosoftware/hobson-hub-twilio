@@ -9,14 +9,14 @@ package com.whizzosoftware.hobson.twilio;
 
 import com.whizzosoftware.hobson.api.plugin.PluginStatus;
 import com.whizzosoftware.hobson.api.plugin.http.AbstractHttpClientPlugin;
+import com.whizzosoftware.hobson.api.plugin.http.HttpResponse;
 import com.whizzosoftware.hobson.api.property.PropertyConstraintType;
 import com.whizzosoftware.hobson.api.property.PropertyContainer;
 import com.whizzosoftware.hobson.api.property.TypedProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
-import java.util.Map;
+import java.io.IOException;
 
 /**
  * A plugin that publishes a task action for sending SMSs via Twilio.
@@ -71,12 +71,16 @@ public class TwilioPlugin extends AbstractHttpClientPlugin {
     }
 
     @Override
-    protected void onHttpResponse(int statusCode, List<Map.Entry<String, String>> headers, String response, Object context) {
-        logger.debug("Twilio message result ({}): {}", statusCode, response);
+    public void onHttpResponse(HttpResponse response, Object context) {
+        try {
+            logger.debug("Twilio message result ({}): {}", response.getStatusCode(), response.getBody());
+        } catch (IOException e) {
+            logger.error("Error processing HTTP response", e);
+        }
     }
 
     @Override
-    protected void onHttpRequestFailure(Throwable cause, Object context) {
+    public void onHttpRequestFailure(Throwable cause, Object context) {
         logger.error("Failed to send Twilio message", cause);
     }
 
