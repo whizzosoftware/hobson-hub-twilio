@@ -1,10 +1,12 @@
-/*******************************************************************************
+/*
+ *******************************************************************************
  * Copyright (c) 2015 Whizzo Software, LLC.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- *******************************************************************************/
+ *******************************************************************************
+*/
 package com.whizzosoftware.hobson.twilio;
 
 import com.whizzosoftware.hobson.api.plugin.PluginStatus;
@@ -13,6 +15,7 @@ import com.whizzosoftware.hobson.api.plugin.http.HttpResponse;
 import com.whizzosoftware.hobson.api.property.PropertyConstraintType;
 import com.whizzosoftware.hobson.api.property.PropertyContainer;
 import com.whizzosoftware.hobson.api.property.TypedProperty;
+import com.whizzosoftware.hobson.twilio.action.TwilioSMSActionProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,14 +32,14 @@ public class TwilioPlugin extends AbstractHttpClientPlugin {
     private String accountSid;
     private String authToken;
     private String phoneNumber;
-    private boolean actionClassPublished = false;
+    private boolean actionProviderPublished = false;
 
-    public TwilioPlugin(String pluginId) {
-        super(pluginId);
+    public TwilioPlugin(String pluginId, String version, String description) {
+        super(pluginId, version, description);
     }
 
     @Override
-    protected TypedProperty[] createSupportedProperties() {
+    protected TypedProperty[] getConfigurationPropertyTypes() {
         return new TypedProperty[] {
             new TypedProperty.Builder("accountSid", "Account SID", "Your Twilio account SID", TypedProperty.Type.STRING).
                     constraint(PropertyConstraintType.required, true).
@@ -84,16 +87,28 @@ public class TwilioPlugin extends AbstractHttpClientPlugin {
         logger.error("Failed to send Twilio message", cause);
     }
 
-    protected void processConfig(PropertyContainer config) {
+    public String getAccountSid() {
+        return accountSid;
+    }
+
+    public String getAuthToken() {
+        return authToken;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    private void processConfig(PropertyContainer config) {
         accountSid = config.getStringPropertyValue("accountSid");
         authToken = config.getStringPropertyValue("authToken");
         phoneNumber = config.getStringPropertyValue("phoneNumber");
 
         if (accountSid != null && authToken != null && phoneNumber != null) {
             setStatus(PluginStatus.running());
-            if (!actionClassPublished) {
-                publishActionClass(new TwilioSMSAction(this, accountSid, authToken, phoneNumber));
-                actionClassPublished = true;
+            if (!actionProviderPublished) {
+                publishActionProvider(new TwilioSMSActionProvider(this));
+                actionProviderPublished = true;
             }
         } else {
             setStatus(PluginStatus.notConfigured(""));
