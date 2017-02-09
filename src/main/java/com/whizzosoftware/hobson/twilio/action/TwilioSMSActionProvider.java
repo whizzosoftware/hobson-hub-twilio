@@ -24,7 +24,7 @@ public class TwilioSMSActionProvider extends ActionProvider {
     private TwilioPlugin plugin;
 
     public TwilioSMSActionProvider(TwilioPlugin plugin) {
-        super(PropertyContainerClassContext.create(plugin.getContext(), "sms"), "Send Twilio SMS", "Send an SMS to {phoneNumber}", true, 2000);
+        super(PropertyContainerClassContext.create(plugin.getContext(), "sendMessage"), "Send Twilio SMS", "Send an SMS to {phoneNumber}", true, 2000);
 
         this.plugin = plugin;
 
