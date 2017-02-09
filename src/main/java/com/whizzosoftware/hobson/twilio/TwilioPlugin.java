@@ -55,7 +55,7 @@ public class TwilioPlugin extends AbstractHttpClientPlugin {
 
     @Override
     public String getName() {
-        return "Twilio Plugin";
+        return "Twilio";
     }
 
     @Override
