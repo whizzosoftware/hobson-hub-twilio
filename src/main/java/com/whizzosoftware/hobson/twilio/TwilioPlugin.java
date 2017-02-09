@@ -76,7 +76,11 @@ public class TwilioPlugin extends AbstractHttpClientPlugin {
     @Override
     public void onHttpResponse(HttpResponse response, Object context) {
         try {
-            logger.debug("Twilio message result ({}): {}", response.getStatusCode(), response.getBody());
+            if (response.getStatusCode() >= 400 && response.getStatusCode() < 600) {
+                logger.error("Error sending Twilio message ({}): {}", response.getStatusCode(), response.getBody());
+            } else {
+                logger.debug("Twilio message result ({}): {}", response.getStatusCode(), response.getBody());
+            }
         } catch (IOException e) {
             logger.error("Error processing HTTP response", e);
         }
